@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import axios from 'axios';
 
 const Auth = ({ onLogin }) => {
-    const [name, setName] = useState(''); // Adiciona o estado para o nome
+    const [name, setName] = useState('');
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [isRegister, setIsRegister] = useState(false);
@@ -11,8 +11,6 @@ const Auth = ({ onLogin }) => {
         e.preventDefault();
         try {
             const url = isRegister ? '/register' : '/login';
-            
-            // Se for registro, envia o nome também
             const payload = isRegister
                 ? { user_name: name, user_email: email, user_password: password }
                 : { user_email: email, user_password: password };
@@ -20,14 +18,10 @@ const Auth = ({ onLogin }) => {
             const { data } = await axios.post(`https://prjtodolist.azurewebsites.net${url}`, payload);
     
             if (data.access_token) {
-                // Armazena o token no localStorage
                 localStorage.setItem('token', data.access_token);
-                
                 onLogin(data.access_token);
-                // Redirecionar para a página de tarefas
                 window.location.href = '/assignments';
             } else {
-                // Tratamento de mensagens de erro
                 alert(data.message || 'Erro ao fazer login ou registro');
             }
         } catch (error) {
@@ -37,35 +31,44 @@ const Auth = ({ onLogin }) => {
     };
 
     return (
-        <div>
-            <h2>{isRegister ? 'Register' : 'Login'}</h2>
-            <form onSubmit={handleSubmit}>
+        <div className="container mt-4">
+            <h2 className="mb-4">{isRegister ? 'Register' : 'Login'}</h2>
+            <form onSubmit={handleSubmit} className="shadow p-4 bg-light rounded">
                 {isRegister && (
+                    <div className="mb-3">
+                        <input
+                            type="text"
+                            className="form-control"
+                            placeholder="Name"
+                            value={name}
+                            onChange={(e) => setName(e.target.value)}
+                            required
+                        />
+                    </div>
+                )}
+                <div className="mb-3">
                     <input
-                        type="text"
-                        placeholder="Name"
-                        value={name}
-                        onChange={(e) => setName(e.target.value)}
+                        type="email"
+                        className="form-control"
+                        placeholder="Email"
+                        value={email}
+                        onChange={(e) => setEmail(e.target.value)}
                         required
                     />
-                )}
-                <input
-                    type="email"
-                    placeholder="Email"
-                    value={email}
-                    onChange={(e) => setEmail(e.target.value)}
-                    required
-                />
-                <input
-                    type="password"
-                    placeholder="Password"
-                    value={password}
-                    onChange={(e) => setPassword(e.target.value)}
-                    required
-                />
-                <button type="submit">{isRegister ? 'Register' : 'Login'}</button>
+                </div>
+                <div className="mb-3">
+                    <input
+                        type="password"
+                        className="form-control"
+                        placeholder="Password"
+                        value={password}
+                        onChange={(e) => setPassword(e.target.value)}
+                        required
+                    />
+                </div>
+                <button type="submit" className="btn btn-primary">{isRegister ? 'Register' : 'Login'}</button>
             </form>
-            <p onClick={() => setIsRegister(!isRegister)}>
+            <p onClick={() => setIsRegister(!isRegister)} className="mt-3 text-center">
                 {isRegister ? 'Already have an account? Login' : 'Create a new account'}
             </p>
         </div>
